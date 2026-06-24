@@ -13,14 +13,17 @@ bool LabelPrintout::OnPrintPage(int) {
     wxDC* dc = GetDC();
     if (!dc) return false;
 
-    // Printer resolution -> pixels per millimetre.
-    int ppiX, ppiY;
-    GetPPIPrinter(&ppiX, &ppiY);
-    if (ppiX <= 0) ppiX = 600;
-    double pxPerMM = ppiX / 25.4;
+    // Draw in a fixed logical unit (10 units = 1 mm) and let wxWidgets scale
+    // the whole A4 sheet onto the physical paper. This keeps the mapping
+    // correct for both real printing and the (scaled-down) preview DC; drawing
+    // at the raw printer DPI overshoots the preview bitmap and the label runs
+    // off the page.
+    const double pxPerMM = 10.0;
+    const double pageW = 210.0, pageH = 297.0;     // A4 mm
+    FitThisSizeToPaper(wxSize(static_cast<int>(pageW * pxPerMM),
+                              static_cast<int>(pageH * pxPerMM)));
 
-    // A4 usable area (210 x 297 mm) minus margins.
-    const double pageW = 210.0, pageH = 297.0;
+    // A4 usable area minus margins.
     double usableW = pageW - 2 * m_marginMM;
     double usableH = pageH - 2 * m_marginMM;
 
