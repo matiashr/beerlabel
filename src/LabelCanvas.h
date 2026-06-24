@@ -9,6 +9,10 @@ class LabelCanvas : public wxPanel {
 public:
     LabelCanvas(wxWindow* parent, Label* label);
 
+    // Point the canvas at a different model (e.g. after opening a file).
+    // Clears the current selection and repaints.
+    void SetLabel(Label* label);
+
     void SetBottleGuide(const Label::BottlePreset* preset);
     const Label::BottlePreset* BottleGuide() const { return m_guide; }
 

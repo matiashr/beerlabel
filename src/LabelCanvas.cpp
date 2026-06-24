@@ -14,6 +14,14 @@ LabelCanvas::LabelCanvas(wxWindow* parent, Label* label)
     Bind(wxEVT_SIZE, &LabelCanvas::OnSize, this);
 }
 
+void LabelCanvas::SetLabel(Label* label) {
+    m_label = label;
+    m_selected = nullptr;
+    m_dragging = false;
+    if (onSelectionChanged) onSelectionChanged(nullptr);
+    Refresh();
+}
+
 void LabelCanvas::SetBottleGuide(const Label::BottlePreset* preset) {
     m_guide = preset;
     Refresh();

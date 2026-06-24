@@ -410,15 +410,13 @@ void MainFrame::OnOpen(wxCommandEvent&) {
                      "Open", wxICON_ERROR);
         return;
     }
+    // Reuse the existing canvas rather than recreating it. Recreating it would
+    // leave the old canvas alive (wxSizer::Clear() detaches but does not destroy
+    // windows) holding a dangling pointer to the Label we replace below, and it
+    // would crash repainting the freed model.
     m_label = std::move(loaded);
     m_path = dlg.GetPath();
-    GetSizer()->Clear();
-    m_canvas = new LabelCanvas(this, m_label.get());
-    m_canvas->onSelectionChanged = [this](LabelItem* i) { OnSelectionChanged(i); };
-    m_canvas->onModelChanged = [this] { SetModified(true); SyncInspectorFromModel(); };
-    GetSizer()->Add(m_canvas, 1, wxEXPAND);
-    GetSizer()->Add(m_inspector, 0, wxEXPAND);
-    Layout();
+    m_canvas->SetLabel(m_label.get());
     SetModified(false);
     SyncInspectorFromModel();
 }
